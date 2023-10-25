@@ -656,17 +656,28 @@ async def ids(ctx):
 @bot.command(name="add_ids", aliases=["aid"])
 async def add_ids(ctx, *, args):
     try:
-        with open("config.json") as file:
+        with open("config.json", "r") as file:
             data = json.load(file)
 
-        entries = args.split(", ")
+        entries = args.split(",")
+        max_price = None
+
+        # Check if the last entry is a valid max price (integer)
+        last_entry = entries[-1].strip()
+        if last_entry.isnumeric():
+            max_price = int(entries.pop())
+
         item_data = data.get("items", {}).get("list", {})  # Get the 'list' dictionary within 'items'
 
         for entry in entries:
-            parts = entry.split(":")
-            if len(parts) == 2:
-                item_id, max_price = map(int, parts)
-                item_data[str(item_id)] = {"max_price": max_price}  # Use strings as keys to match JSON structure
+            item_id = int(entry.strip())
+            if max_price is not None:
+                item_data[str(item_id)] = {"max_price": max_price}
+            else:
+                item_data[str(item_id)] = {"max_price": 0}  # Default max price when not specified
+
+        # Update the 'list' dictionary within 'items' in the data dictionary
+        data["items"]["list"] = item_data
 
         with open("config.json", "w") as file:
             json.dump(data, file, indent=4)
@@ -684,7 +695,7 @@ async def add_ids(ctx, *, args):
             color=discord.Color.red()
         )
         await ctx.send(embed=embed)
-
+        
 @bot.command(name="remove_ids", aliases=["rmid"])
 async def remove_ids(ctx, *, args):
     try:
