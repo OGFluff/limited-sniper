@@ -719,7 +719,7 @@ async def remove_ids(ctx, *, args):
 @bot.command(name="clearids", aliases=["cid"])
 async def clear_ids(ctx):
     try:
-        with open("config.json") as file:
+        with open("config.json", "r") as file:
             data = json.load(file)
 
         if "items" in data and "list" in data["items"]:
@@ -741,7 +741,7 @@ async def clear_ids(ctx):
             color=discord.Color.red()
         )
         await ctx.send(embed=embed)
-
+        
 @bot.command(name="add_links", aliases=["al"])
 async def add_links(ctx, *, args):
     try:
