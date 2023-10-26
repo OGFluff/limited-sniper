@@ -4,7 +4,7 @@ from itertools import islice, cycle
 class sniper:
     def __init__(self):
         self.account = asyncio.run(self.setup_accounts())
-        with open('config.json', 'r') as file: 
+        with open('config1.json', 'r') as file: 
             content = json.load(file)
             self.items = content['items']
             self.key = content['key']
@@ -24,7 +24,7 @@ class sniper:
                self.items['list'].update(await response.json())
         
     async def setup_accounts(self):
-        with open('config.json', 'r') as file: cookie = (json.load(file))['cookie']
+        with open('config1.json', 'r') as file: cookie = (json.load(file))['cookie']
         return {"cookie": cookie, "xcsrf_token": await self._get_xcsrf_token(cookie), "user_id": await self._get_user_id(cookie)}
 
     async def _get_user_id(self, cookie) -> str:
