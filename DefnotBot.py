@@ -879,38 +879,35 @@ async def add_links(ctx, *, args):
 @bot.command(name="help", aliases=['h'], description="Shows the help message.")
 async def help_command(ctx):
     pages = [
-    [
-        {"name": f"{prefix}run   |   {prefix}r", "value": "Starts the Sniper."},
-        {"name": f"{prefix}restart   |   {prefix}re", "value": "Restarts the Sniper."},
-        {"name": f"{prefix}kill   |   {prefix}k", "value": "Stops the Sniper."},
-        {"name": f"{prefix}ss", "value": "Takes a screenshot of your PC."},
-        {"name": f"{prefix}check `<id>`   |   {prefix}c `<id>`", "value": "Checks information about a catalog item."},
-        {"name": f"{prefix}help   |   {prefix}h", "value": "Shows this message."},
-    ],
-    [
-        {"name": f'{prefix}status   |   {prefix}s', "value": 'Check if the Sniper is running.'},
-        {"name": f'{prefix}config   |   {prefix}cf', "value": 'View the current configuration settings.'},
-        {"name": f'{prefix}resetids `[option]`   |   {prefix}rid `[option]`', "value": 'Resets all the IDs in specified item list. Options: release/r'},
-        {"name": f'{prefix}change `[option]` `[value]`   |   {prefix}ch `[option]` `[value]`", "value": 'Change configuration settings. Options: rooms, token, prefix, theme, cookie.'},
-        {"name": f'{prefix}ids [option]', "value": 'Display the IDs in the specified list. Options: release/r'},
-        {"name": f'{prefix}autorestart `[toggle]` `[interval]`   |   {prefix}ar `[toggle]` `[interval]`", "value": 'Automatically restarts your sniper every X amount of time. Toggle: on, off'},
-        {"name": f'{prefix}add_ids `<id1>, <id2>, etc.. <type> <max price>`   |   {prefix}aid `<id1>, <id2>, etc.. <type> <max price>`', "value": 'Adds multiple IDs at once to config.json. Type: release/r, cheap/c. **IMPORTANT:** The commas and spaces are very important so make sure you put them.'},
-    ],
-    [
-        {"name": f'{prefix}add_links `<link1>, <link2>, etc.. <type> <max price>`   |   {prefix}al `<link1>, <link2>, etc.. <type> <max price>`', "value": 'Adds multiple IDs at once to config.json using roblox links. Type: release/r, cheap/c. **IMPORTANT:** The commas and spaces are very important so make sure you put them.'},
-        {"name": f'{prefix}elapsed   |   {prefix}el', "value": 'View for how long the sniper has been running.'},
-        {"name": f'{prefix}add_cookies `<cookie1>, <cookie2>, etc..`   |   {prefix}ac `<cookie1>, <cookie2>, etc..`', "value": 'Add multiple cookies at once to config.json'},
-        {"name": f'{prefix}remove_ids `<id1>, <id2>, etc.. <type>`   |   {prefix}rmid `<id1>, <id2>, etc.. <type>`', "value": 'Remove multiple IDs at once from config.json. Type: release/r'},
-        {"name": f'{prefix}remove_cookies `<cookie1>, <cookie2>, etc..`   |   {prefix}rc `<cookie1>, <cookie2>, etc..`', "value": 'Remove multiple cookies at once from config.json.'},
-        {"name": f'{prefix}checkup `<type>`   |   {prefix}cup `<type>`', "value": 'Checks all the IDs in the specified type to see which ones are on sale. Type: release/r'},
-    ],
-    
-    [
-        {"name": f'{prefix}open_bundle_buyer', "value": 'Open your bundle buyer.'},
-        {"name": f'{prefix}close_bundle_buyer', "value": 'Close your bundle buyer.'},
-        
+        [
+            {"name": f"{prefix}run   |   {prefix}r", "value": "Starts the Sniper."},
+            {"name": f"{prefix}restart   |   {prefix}re", "value": "Restarts the Sniper."},
+            {"name": f"{prefix}kill   |   {prefix}k", "value": "Stops the Sniper."},
+            {"name": f"{prefix}ss", "value": "Takes a screenshot of your PC."},
+            {"name": f"{prefix}check `<id>`   |   {prefix}c `<id>`", "value": "Checks information about a catalog item."},
+            {"name": f"{prefix}help   |   {prefix}h", "value": "Shows this message."},
+        ],
+        [
+            {"name": f'{prefix}status   |   {prefix}s', "value": 'Check if the Sniper is running.'},
+            {"name": f'{prefix}config   |   {prefix}cf', "value": 'View the current configuration settings.'},
+            {"name": f'{prefix}resetids `[option]`   |   {prefix}rid `[option]`', "value": 'Resets all the IDs in specified item list. Options: release/r'},
+            {"name": f'{prefix}change `[option]` `[value]`   |   {prefix}ch `[option]` `[value]`', "value": 'Change configuration settings. Options: rooms, token, prefix, theme, cookie.'},
+            {"name": f'{prefix}ids [option]', "value": 'Display the IDs in the specified list. Options: release/r'},
+            {"name": f'{prefix}autorestart `[toggle]` `[interval]`   |   {prefix}ar `[toggle]` `[interval]`', "value": 'Automatically restarts your sniper every X amount of time. Toggle: on, off'},
+            {"name": f'{prefix}add_ids `<id1>, <id2>, etc.. <type> <max price>`   |   {prefix}aid `<id1>, <id2>, etc.. <type> <max price>`', "value": 'Adds multiple IDs at once to config.json. Type: release/r, cheap/c. **IMPORTANT:** The commas and spaces are very important so make sure you put them.'},
+           
+        ],
+        [
+            {"name": f'{prefix}add_links `<link1>, <link2>, etc.. <type> <max price>`   |   {prefix}al `<link1>, <link1>, etc.. <type> <max price>`', "value": 'Adds multiple IDs at once to config.json using roblox links. Type: release/r, cheap/c. **IMPORTANT:** The commas and spaces are very important so make sure you put them.'},
+            {"name": f'{prefix}elapsed   |   {prefix}el', "value": 'View for how long the sniper has been running.'},
+            {"name": f'{prefix}add_cookies `<cookie1>, <cookie2>, etc..`   |   {prefix}ac `<cookie1>, <cookie2>, etc..`', "value": 'Add multiple cookies at once to config.json'},
+            {"name": f'{prefix}remove_ids `<id1>, <id2>, etc.. <type>`   |   {prefix}rmid `<id1>, <id2>, etc.. <type>`', "value": 'Remove multiple IDs at once from config.json. Type: release/r'},
+            {"name": f'{prefix}remove_cookies `<cookie1>, <cookie2>, etc..`   |   {prefix}rc `<cookie1>, <cookie2>, etc..`', "value": 'Remove multiple cookies at once from config.json.'},
+            {"name": f'{prefix}checkup `<type>`   |   {prefix}cup `<type>`', "value": 'Checks all the IDs in the specified type to see which ones are on sale. Type: release/r'},
+            {"name": f'{prefix}open_bundle_buyer', "value": 'Open your bundle buyer py file.'},
+            {"name": f'{prefix}close_bundle_buyer', "value": 'Close your bundle buyer py file.'},
+        ]
     ]
-]
 
     page = 0
 
