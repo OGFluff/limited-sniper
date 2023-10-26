@@ -5,6 +5,7 @@ import os
 import asyncio
 import requests
 import re
+import psutil
 import time
 from datetime import datetime, timedelta
 try:
@@ -23,12 +24,12 @@ except:
     os.system("pip install Pillow")
 
 os.system("cls")
-with open("config.json") as file:
+with open("config1.json") as file:
     config = json.load(file)
 
-token = "" # Discord Bot Token Goes Here
+token = "token" # Discord Bot Token Goes Here
 prefix = "!"
-pfile = 'main.py'
+pfile = 'Sniper.py'
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=f'{prefix}', intents=intents, help_command=None)
 
@@ -58,6 +59,33 @@ async def on_ready():
     bot.loop.create_task(update_title())
     os.system("cls")
 
+
+@bot.command(name="bundle_buyer", aliases= ["rb"])
+async def open_bundle_buyer(ctx):
+    try:
+        
+        script_path = 'main.py'
+
+       
+        subprocess.Popen(['python', script_path], creationflags=subprocess.CREATE_NEW_CONSOLE)
+
+        response = f'✅ | Bundle Buyer started!'
+        embed = discord.Embed(
+            title='Success',
+            description=f'{response}',
+            color=discord.Color.green()
+        )
+    except Exception as e:
+        response = f'❌ | Error opening Bundle Buyer: {e}'
+        embed = discord.Embed(
+            title='Error',
+            description=f'{response}',
+            color=discord.Color.red()
+        )
+
+    await ctx.send(embed=embed)
+
+
 @bot.command(name="run", aliases=["r"])
 async def start(ctx):
     global process, start_time
@@ -74,7 +102,8 @@ async def start(ctx):
         if start_time is None:
             start_time = datetime.now()
 
-        os.system(f"start /B start cmd.exe @cmd /k py {pfile}")
+        subprocess.Popen(['python', 'sniper.py'], creationflags=subprocess.CREATE_NEW_CONSOLE)
+
         process = True
         response = f'✅ | Sniper started!'
         embed = discord.Embed(
@@ -105,24 +134,40 @@ async def kill(ctx):
         return
 
     try:
-        current_pid = os.getpid()
-        processes = subprocess.run(['tasklist'], capture_output=True, text=True).stdout.split('\n')
-        programs_to_kill = ['python.exe', 'cmd.exe']
+        processes = psutil.process_iter(attrs=['pid', 'name'])
 
-        for proces in processes:
-            for program in programs_to_kill:
-                if program in proces:
-                    pid = int(proces.split()[1])
-                    if pid != current_pid:
-                        os.system(f'taskkill /PID {pid} /F')
+       
+        for proc in processes:
+            try:
+                process_name = proc.info['name']
+                if process_name == 'python.exe':
+                   
+                    cmdline = proc.cmdline()
+                    if 'sniper.py' in cmdline:
+                   
+                        proc.terminate()
                         process = False
                         start_time = None
-        response = f'✅ | Sniper stopped!'
+                        response = f'✅ | Sniper stopped!'
+                        embed = discord.Embed(
+                            title='Success',
+                            description=f'{response}',
+                            color=discord.Color.green()
+                        )
+                        await ctx.send(embed=embed)
+                        return
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+
+
+        response = '❌ | Sniper process not found.'
         embed = discord.Embed(
-            title='Success',
+            title='Error',
             description=f'{response}',
-            color=discord.Color.green()
+            color=discord.Color.red()
         )
+        await ctx.send(embed=embed)
+
     except Exception as e:
         response = f'❌ | Error stopping sniper: {e}'
         embed = discord.Embed(
@@ -130,9 +175,47 @@ async def kill(ctx):
             description=f'{response}',
             color=discord.Color.red()
         )
+        await ctx.send(embed=embed) 
 
-    await ctx.send(embed=embed)
+@bot.command(name="kill_bundle_buyer", aliases=['kb'])
+async def kill_bundle_buyer(ctx):
+    try:
+        processes = psutil.process_iter(attrs=['pid', 'name'])
 
+        for proc in processes:
+            try:
+                process_name = proc.info['name']
+                if process_name == 'python.exe':
+                    cmdline = proc.cmdline()
+                    if 'main.py' in cmdline:  
+                        proc.terminate()
+                        response = f'✅ | Bundle Buyer stopped!'
+                        embed = discord.Embed(
+                            title='Success',
+                            description=f'{response}',
+                            color=discord.Color.green()
+                        )
+                        await ctx.send(embed=embed)
+                        return
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+
+        response = '❌ | Bundle Buyer process not found.'
+        embed = discord.Embed(
+            title='Error',
+            description=f'{response}',
+            color=discord.Color.red()
+        )
+        await ctx.send(embed=embed)
+
+    except Exception as e:
+        response = f'❌ | Error stopping Bundle Buyer: {e}'
+        embed = discord.Embed(
+            title='Error',
+            description=f'{response}',
+            color=discord.Color.red()
+        )
+        await ctx.send(embed=embed)
 @bot.command(name="elapsed", aliases=['el'])
 async def elapsed(ctx):
     global start_time
@@ -481,10 +564,10 @@ async def status(ctx):
     await ctx.send(embed=embed)
 
 
-@bot.command(name="config", aliases=["cf"])
+@bot.command(name="config1", aliases=["cf"])
 async def config_command(ctx):
     try:
-        with open("config.json") as file:
+        with open("config1.json") as file:
             data = json.load(file)
 
         auto_restart = data.get("auto_restart", False)
@@ -526,7 +609,7 @@ async def change(ctx, change=None, value=None):
             await ctx.send(embed=embed)
             return
 
-        with open("config.json") as file:
+        with open("config1.json") as file:
             data = json.load(file)
 
         if change == "cookie":
@@ -586,7 +669,7 @@ async def change(ctx, change=None, value=None):
             await ctx.send(embed=embed)
             return
 
-        with open("config.json", "w") as file:
+        with open("config1.json", "w") as file:
             json.dump(data, file, indent=4)
     except Exception as e:
         embed = discord.Embed(
@@ -600,7 +683,7 @@ async def change(ctx, change=None, value=None):
 @bot.command(name="resetids", aliases=["rid"])
 async def delete_ids(ctx):
     try:
-        with open("config.json") as file:
+        with open("config1.json") as file:
             data = json.load(file)
 
         if len(data["items"]) <= 1:
@@ -612,7 +695,7 @@ async def delete_ids(ctx):
             await ctx.send(embed=embed)
             return
         data["items"] = data["items"][:1]
-        with open("config.json", "w") as file:
+        with open("config1.json", "w") as file:
             json.dump(data, file, indent=4)
         embed = discord.Embed(
             title='Success',
@@ -631,7 +714,7 @@ async def delete_ids(ctx):
 @bot.command(name="ids", description="Display the IDs in the item list.")
 async def ids(ctx):
     try:
-        with open("config.json") as file:
+        with open("config1.json") as file:
             data = json.load(file)
 
         item_list = data.get("items", {}).get("list", {})
@@ -656,7 +739,7 @@ async def ids(ctx):
 @bot.command(name="add_ids", aliases=["aid"])
 async def add_ids(ctx, *, args):
     try:
-        with open("config.json", "r") as file:
+        with open("config1.json", "r") as file:
             data = json.load(file)
 
         entries = args.split(",")
@@ -674,12 +757,12 @@ async def add_ids(ctx, *, args):
             if max_price is not None:
                 item_data[str(item_id)] = {"max_price": max_price}
             else:
-                item_data[str(item_id)] = {"max_price": 0}  # Default max price when not specified
+                item_data[str(item_id)] = {"max_price": 10}  # Default max price when not specified
 
         # Update the 'list' dictionary within 'items' in the data dictionary
         data["items"]["list"] = item_data
 
-        with open("config.json", "w") as file:
+        with open("config1.json", "w") as file:
             json.dump(data, file, indent=4)
 
         embed = discord.Embed(
@@ -695,11 +778,11 @@ async def add_ids(ctx, *, args):
             color=discord.Color.red()
         )
         await ctx.send(embed=embed)
-        
+
 @bot.command(name="remove_ids", aliases=["rmid"])
 async def remove_ids(ctx, *, args):
     try:
-        with open("config.json") as file:
+        with open("config1.json") as file:
             data = json.load(file)
 
         entries = args.split(", ")
@@ -710,7 +793,7 @@ async def remove_ids(ctx, *, args):
             if item_id in item_data:
                 del item_data[item_id]
 
-        with open("config.json", "w") as file:
+        with open("config1.json", "w") as file:
             json.dump(data, file, indent=4)
 
         embed = discord.Embed(
@@ -730,13 +813,13 @@ async def remove_ids(ctx, *, args):
 @bot.command(name="clearids", aliases=["cid"])
 async def clear_ids(ctx):
     try:
-        with open("config.json", "r") as file:
+        with open("config1.json", "r") as file:
             data = json.load(file)
 
         if "items" in data and "list" in data["items"]:
             data["items"]["list"] = {}
 
-        with open("config.json", "w") as file:
+        with open("config1.json", "w") as file:
             json.dump(data, file, indent=4)
 
         embed = discord.Embed(
@@ -752,19 +835,30 @@ async def clear_ids(ctx):
             color=discord.Color.red()
         )
         await ctx.send(embed=embed)
-        
+
 @bot.command(name="add_links", aliases=["al"])
 async def add_links(ctx, *, args):
     try:
-        with open("config.json") as file:
+        with open("config1.json", "r") as file:
             data = json.load(file)
 
         entries = args.split(", ")
-        item_links = [entry for entry in entries]
+        item_links = [entry.strip() for entry in entries]
 
-        data["items"].extend(item_links)
+        # Ensure that "items" is a dictionary in your JSON structure
+        if "items" not in data:
+            data["items"] = {}
 
-        with open("config.json", "w") as file:
+        # Check if "list" key exists in "items" and is a dictionary
+        if "list" not in data["items"]:
+            data["items"]["list"] = {}
+
+        for link in item_links:
+            # Extract the item ID from the link
+            item_id = link.split("/catalog/")[1].split("/")[0]
+            data["items"]["list"][item_id] = {"max_price": 10}
+
+        with open("config1.json", "w") as file:
             json.dump(data, file, indent=4)
 
         embed = discord.Embed(
@@ -785,33 +879,38 @@ async def add_links(ctx, *, args):
 @bot.command(name="help", aliases=['h'], description="Shows the help message.")
 async def help_command(ctx):
     pages = [
-        [
-            {"name": f"{prefix}run   |   {prefix}r", "value": "Starts the Sniper."},
-            {"name": f"{prefix}restart   |   {prefix}re", "value": "Restarts the Sniper."},
-            {"name": f"{prefix}kill   |   {prefix}k", "value": "Stops the Sniper."},
-            {"name": f"{prefix}ss", "value": "Takes a screenshot of your PC."},
-            {"name": f"{prefix}check `<id>`   |   {prefix}c `<id>`", "value": "Checks information about a catalog item."},
-            {"name": f"{prefix}help   |   {prefix}h", "value": "Shows this message."},
-        ],
-        [
-            {"name": f'{prefix}status   |   {prefix}s', "value": 'Check if the Sniper is running.'},
-            {"name": f'{prefix}config   |   {prefix}cf', "value": 'View the current configuration settings.'},
-            {"name": f'{prefix}resetids `[option]`   |   {prefix}rid `[option]`', "value": 'Resets all the IDs in specified item list. Options: release/r, cheap/c'},
-            {"name": f'{prefix}change `[option]` `[value]`   |   {prefix}ch `[option]` `[value]`', "value": 'Change configuration settings. Options: rooms, token, prefix, theme, cookie.'},
-            {"name": f'{prefix}ids [option]', "value": 'Display the IDs in the specified list. Options: release/r, cheap/c'},
-            {"name": f'{prefix}autorestart `[toggle]` `[interval]`   |   {prefix}ar `[toggle]` `[interval]`', "value": 'Automatically restarts your sniper every X amount of time. Toggle: on, off'},
-            {"name": f'{prefix}add_ids `<id1>, <id2>, etc.. <type> <max price>`   |   {prefix}aid `<id1>, <id2>, etc.. <type> <max price>`', "value": 'Adds multiple IDs at once to config.json. Type: release/r, cheap/c. **IMPORTANT:** The commas and spaces are very important so make sure you put them.'},
-            {"name": f'{prefix}cheap `[toggle]`', "value": 'Toggle cheap sniping on/off. Toggle: on, off'},
-        ],
-        [
-            {"name": f'{prefix}add_links `<link1>, <link2>, etc.. <type> <max price>`   |   {prefix}al `<link1>, <link1>, etc.. <type> <max price>`', "value": 'Adds multiple IDs at once to config.json using roblox links. Type: release/r, cheap/c. **IMPORTANT:** The commas and spaces are very important so make sure you put them.'},
-            {"name": f'{prefix}elapsed   |   {prefix}el', "value": 'View for how long the sniper has been running.'},
-            {"name": f'{prefix}add_cookies `<cookie1>, <cookie2>, etc..`   |   {prefix}ac `<cookie1>, <cookie2>, etc..`', "value": 'Add multiple cookies at once to config.json'},
-            {"name": f'{prefix}remove_ids `<id1>, <id2>, etc.. <type>`   |   {prefix}rmid `<id1>, <id2>, etc.. <type>`', "value": 'Remove multiple IDs at once from config.json. Type: release/r, cheap/c.'},
-            {"name": f'{prefix}remove_cookies `<cookie1>, <cookie2>, etc..`   |   {prefix}rc `<cookie1>, <cookie2>, etc..`', "value": 'Remove multiple cookies at once from config.json.'},
-            {"name": f'{prefix}checkup `<type>`   |   {prefix}cup `<type>`', "value": 'Checks all the IDs in the specified type to see which ones are on sale. Type: release/r, cheap/c.'},
-        ]
+    [
+        {"name": f"{prefix}run   |   {prefix}r", "value": "Starts the Sniper."},
+        {"name": f"{prefix}restart   |   {prefix}re", "value": "Restarts the Sniper."},
+        {"name": f"{prefix}kill   |   {prefix}k", "value": "Stops the Sniper."},
+        {"name": f"{prefix}ss", "value": "Takes a screenshot of your PC."},
+        {"name": f"{prefix}check `<id>`   |   {prefix}c `<id>`", "value": "Checks information about a catalog item."},
+        {"name": f"{prefix}help   |   {prefix}h", "value": "Shows this message."},
+    ],
+    [
+        {"name": f'{prefix}status   |   {prefix}s', "value": 'Check if the Sniper is running.'},
+        {"name": f'{prefix}config   |   {prefix}cf', "value": 'View the current configuration settings.'},
+        {"name": f'{prefix}resetids `[option]`   |   {prefix}rid `[option]`', "value": 'Resets all the IDs in specified item list. Options: release/r'},
+        {"name": f'{prefix}change `[option]` `[value]`   |   {prefix}ch `[option]` `[value]`", "value": 'Change configuration settings. Options: rooms, token, prefix, theme, cookie.'},
+        {"name": f'{prefix}ids [option]', "value": 'Display the IDs in the specified list. Options: release/r'},
+        {"name": f'{prefix}autorestart `[toggle]` `[interval]`   |   {prefix}ar `[toggle]` `[interval]`", "value": 'Automatically restarts your sniper every X amount of time. Toggle: on, off'},
+        {"name": f'{prefix}add_ids `<id1>, <id2>, etc.. <type> <max price>`   |   {prefix}aid `<id1>, <id2>, etc.. <type> <max price>`', "value": 'Adds multiple IDs at once to config.json. Type: release/r, cheap/c. **IMPORTANT:** The commas and spaces are very important so make sure you put them.'},
+    ],
+    [
+        {"name": f'{prefix}add_links `<link1>, <link2>, etc.. <type> <max price>`   |   {prefix}al `<link1>, <link2>, etc.. <type> <max price>`', "value": 'Adds multiple IDs at once to config.json using roblox links. Type: release/r, cheap/c. **IMPORTANT:** The commas and spaces are very important so make sure you put them.'},
+        {"name": f'{prefix}elapsed   |   {prefix}el', "value": 'View for how long the sniper has been running.'},
+        {"name": f'{prefix}add_cookies `<cookie1>, <cookie2>, etc..`   |   {prefix}ac `<cookie1>, <cookie2>, etc..`', "value": 'Add multiple cookies at once to config.json'},
+        {"name": f'{prefix}remove_ids `<id1>, <id2>, etc.. <type>`   |   {prefix}rmid `<id1>, <id2>, etc.. <type>`', "value": 'Remove multiple IDs at once from config.json. Type: release/r'},
+        {"name": f'{prefix}remove_cookies `<cookie1>, <cookie2>, etc..`   |   {prefix}rc `<cookie1>, <cookie2>, etc..`', "value": 'Remove multiple cookies at once from config.json.'},
+        {"name": f'{prefix}checkup `<type>`   |   {prefix}cup `<type>`', "value": 'Checks all the IDs in the specified type to see which ones are on sale. Type: release/r'},
+    ],
+    
+    [
+        {"name": f'{prefix}open_bundle_buyer', "value": 'Open your bundle buyer.'},
+        {"name": f'{prefix}close_bundle_buyer', "value": 'Close your bundle buyer.'},
+        
     ]
+]
 
     page = 0
 
