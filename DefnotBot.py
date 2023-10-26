@@ -904,8 +904,8 @@ async def help_command(ctx):
             {"name": f'{prefix}remove_ids `<id1>, <id2>, etc.. <type>`   |   {prefix}rmid `<id1>, <id2>, etc.. <type>`', "value": 'Remove multiple IDs at once from config.json. Type: release/r'},
             {"name": f'{prefix}remove_cookies `<cookie1>, <cookie2>, etc..`   |   {prefix}rc `<cookie1>, <cookie2>, etc..`', "value": 'Remove multiple cookies at once from config.json.'},
             {"name": f'{prefix}checkup `<type>`   |   {prefix}cup `<type>`', "value": 'Checks all the IDs in the specified type to see which ones are on sale. Type: release/r'},
-            {"name": f'{prefix}open_bundle_buyer', "value": 'Open your bundle buyer py file.'},
-            {"name": f'{prefix}close_bundle_buyer', "value": 'Close your bundle buyer py file.'},
+            {"name": f'{prefix}open_bundle_buyer', "value": 'Open your bundle buyer.'},
+            {"name": f'{prefix}close_bundle_buyer', "value": 'Close your bundle buyer.'},
         ]
     ]
 
